@@ -1,0 +1,17 @@
+---
+- name: Patches docker starting state
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Stop docker service
+      shell: service docker stop
+
+    - name: Clean up docker files 1/2
+      shell: rm -rf /var/run/docker
+
+    - name: Clean up docker files 2/2
+      shell: rm /var/run/docker.*
+
+    - name: Start docker service
+      shell: service docker start

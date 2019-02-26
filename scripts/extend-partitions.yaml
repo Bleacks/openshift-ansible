@@ -1,0 +1,31 @@
+---
+- name: Resize system partitions
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+
+    - name: Extending home
+      shell: lvextend -L +5G /dev/mapper/vg0-home
+      
+    - name: Resizing home
+      shell: resize2fs /dev/mapper/vg0-home
+
+    - name: Extending tmp
+      shell: lvextend -L +5G /dev/mapper/vg0-tmp
+      
+    - name: Resizing tmp
+      shell: resize2fs /dev/mapper/vg0-tmp
+
+    - name: Extending var
+      shell: lvextend -l +70%FREE /dev/mapper/vg0-var
+      
+    - name: Resizing var
+      shell: resize2fs /dev/mapper/vg0-var
+
+    - name: Extending root
+      shell: lvextend -l +100%FREE /dev/mapper/vg0-racine
+      
+    - name: Resizing root
+      shell: resize2fs /dev/mapper/vg0-racine
+

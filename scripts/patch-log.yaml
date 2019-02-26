@@ -1,0 +1,20 @@
+
+---
+- name: Patches yum and /var/log flooding
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Change rsyslog configuration to stop logging info in /var/log
+      shell: sed -i 's/*.info;mail.none;authpriv.none;cron.none/mail.none;authpriv.none;cron.none/' /etc/rsyslog.conf
+
+    - name: Deletes the unwanted log files
+      shell: rm -rf /var/log/journal/*
+
+    - name: Patches yum locked files
+      shell: yum makecache fast
+
+    - name: Update yum packages
+      yum:
+        name: "*"
+        state: latest

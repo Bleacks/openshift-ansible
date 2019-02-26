@@ -1,0 +1,56 @@
+---
+- name: Open needed port for openshift on nodes (test)
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Port 53 tcp
+      firewalld:
+        port: 53/tcp
+        permanent: true
+        state: enabled
+
+    - name: Port 53 udp
+      firewalld:
+        port: 53/udp
+        permanent: true
+        state: enabled
+      
+    - name: Port 8053 tcp
+      firewalld:
+        port: 8053/tcp
+        permanent: true
+        state: enabled
+
+    - name: Port 8053 udp
+      firewalld:
+        port: 8053/udp
+        permanent: true
+        state: enabled
+      
+    - name: Port 4789 udp
+      firewalld:
+        port: 4789/udp
+        permanent: true
+        state: enabled
+        
+    - name: Port 443 tcp
+      firewalld:
+        port: 443/tcp
+        permanent: true
+        state: enabled
+      
+    - name: Port 8443 tcp
+      firewalld:
+        port: 8443/tcp
+        permanent: true
+        state: enabled
+        
+    - name: Port 10250 tcp
+      firewalld:
+        port: 10250/tcp
+        permanent: true
+        state: enabled
+      
+    - name: Reload firewall
+      shell: firewall-cmd --reload
