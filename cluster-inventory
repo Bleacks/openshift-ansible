@@ -1,0 +1,71 @@
+# Create an OSEv3 group that contains the masters, nodes, etcd and glusterfs groups
+[OSEv3:children]
+masters
+nodes
+etcd
+#glusterfs
+#glusterfs_registry
+
+# Set variables common for all OSEv3 hosts
+[OSEv3:vars]
+# SSH user, this user should allow ssh based auth without requiring a password
+ansible_ssh_user=dollou
+ansible_become=true
+openshift_disable_check = docker_storage,memory_availability,disk_availability,docker_image_availability,package_version
+
+
+# Valid values are origin and openshift-enterprise
+openshift_deployment_type=origin
+openshift_repos_enable_testing=true
+
+# Setup htpasswd for auth
+#openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+#openshift_master_htpasswd_users={'operrin':'$2y$05$CE/sZ7MFE70m0WLqTT.Nhur5kncKfYbPRR8lKEx3vrUX06dmlg69.'}
+
+# Set default route subdomain to our DNS wildcard
+openshift_master_default_subdomain=kubetest.plg.site.univ-lorraine.fr
+
+# Glusterfs storage class should be the default one
+#openshift_storage_glusterfs_storageclass_default=True
+
+# Tell openshift that docker registry storage is on gluterfs with 3 replicas
+#openshift_hosted_registry_storage_kind=glusterfs
+#openshift_hosted_registry_storage_volume_size=10Gi
+
+# Wipe glusterfs + heketi
+# openshift_storage_glusterfs_wipe=True
+
+# We need a different public hostname if we want valid certificates
+# openshift_master_cluster_public_hostname=openshift-console.plg.site.univ-lorraine.fr
+
+# host group for masters
+[masters]
+test-openshift-master.plg.site.univ-lorraine.fr
+
+# host group for etcd
+[etcd]
+test-openshift-master.plg.site.univ-lorraine.fr
+
+# host group for glusterfs persistent storage
+#[glusterfs]
+#test-openshift-node-1.plg.site.univ-lorraine.fr glusterfs_devices='[ "/dev/sdc" ]'
+#test-openshift-node-2.plg.site.univ-lorraine.fr glusterfs_devices='[ "/dev/sdc" ]'
+
+# host group for persistent registry
+#[glusterfs_registry]
+#test-openshift-infra-1.plg.site.univ-lorraine.fr glusterfs_devices='[ "/dev/sdc" ]'
+#test-openshift-infra-2.plg.site.univ-lorraine.fr glusterfs_devices='[ "/dev/sdc" ]'
+
+# host group for all nodes
+[nodes]
+test-openshift-master.plg.site.univ-lorraine.fr openshift_node_group_name='node-config-master'
+test-openshift-node-1.plg.site.univ-lorraine.fr openshift_node_group_name='node-config-compute'
+test-openshift-node-2.plg.site.univ-lorraine.fr openshift_node_group_name='node-config-compute'
+test-openshift-infra-1.plg.site.univ-lorraine.fr openshift_node_group_name='node-config-infra'
+test-openshift-infra-2.plg.site.univ-lorraine.fr openshift_node_group_name='node-config-infra'
+
+#test-openshift-master.plg.site.univ-lorraine.fr openshift_node_group_name='node-config-master' openshift_schedulable=True
+#test-openshift-node-1.plg.site.univ-lorraine.fr openshift_node_group_name='node-config-compute' openshift_schedulable=True
+#test-openshift-node-2.plg.site.univ-lorraine.fr openshift_node_group_name='node-config-compute' openshift_schedulable=True
+#test-openshift-infra-1.plg.site.univ-lorraine.fr openshift_node_group_name='node-config-infra' openshift_node_labels="{'region': 'infra'}" openshift_schedulable=True
+#test-openshift-infra-2.plg.site.univ-lorraine.fr openshift_node_group_name='node-config-infra' openshift_node_labels="{'region': 'infra'}" openshift_schedulable=True
